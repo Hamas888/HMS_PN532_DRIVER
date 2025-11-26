@@ -1,0 +1,27 @@
+name: "HMS_PN532_DRIVER"
+version: "1.0.0"
+
+description: >
+  Cross-platform NFC driver.
+  Works on ESP-IDF, STM32 HAL, Arduino, and Linux/Windows.
+
+url: "https://github.com/Hamas888/HMS_PN532_DRIVER"
+repository: "https://github.com/Hamas888/HMS_PN532_DRIVER.git"
+issues: "https://github.com/Hamas888/HMS_PN532_DRIVER/issues"
+
+maintainers:
+  - "Hamas Saeed <hamasaeed888@gmail.com>"
+
+license: "MIT"
+
+dependencies:
+  idf: ">=5.0"
+
+tags:
+  - nfc
+  - pn532
+  - ndef
+  - rfid
+  - uart
+  - i2c
+  - spi
