@@ -87,6 +87,7 @@ HMS_PN532_NFC_Tag HMS_PN532_MifareClassic::readTag(byte *uid, uint8_t uidLength)
     int index = 0;
     int bufferSize = getBufferSize(messageLength);
     uint8_t buffer[bufferSize];
+    memset(buffer, 0, bufferSize); // Initialize buffer with zeros
 
     #if HMS_PN532_DEBUG_ENABLED
         pn532Logger.info("Reading NDEF message...");
@@ -95,15 +96,15 @@ HMS_PN532_NFC_Tag HMS_PN532_MifareClassic::readTag(byte *uid, uint8_t uidLength)
     #endif
 
     while (index < bufferSize) {
-        if (controller->mifareclassicIsFirstBlock(currentBlock)) {
-            if(controller->mifareclassicAuthenticateBlock(uid, uidLength, currentBlock, 0, key) != HMS_PN532_OK) {
+        if (controller->mifareclassicIsFirstBlock(currentBlock) == HMS_PN532_OK) {
+            if (controller->mifareclassicAuthenticateBlock(uid, uidLength, currentBlock, 0, key) != HMS_PN532_OK) {
                 #if HMS_PN532_DEBUG_ENABLED
                     pn532Logger.error("Error. Sector Authentication failed for block %d", currentBlock);
                 #endif
             }
         }
 
-        if (controller->mifareclassicReadDataBlock(currentBlock, &buffer[index]) == HMS_PN532_OK) {             // read the data block
+        if (controller->mifareclassicReadDataBlock(currentBlock, &buffer[index]) == HMS_PN532_OK) {
             #if HMS_PN532_DEBUG_ENABLED
                 char hexString[MIFARECLASSIC_BLOCK_SIZE*3 + 1] = {0};
                 char* ptr = hexString;
@@ -121,10 +122,10 @@ HMS_PN532_NFC_Tag HMS_PN532_MifareClassic::readTag(byte *uid, uint8_t uidLength)
 
         index += MIFARECLASSIC_BLOCK_SIZE;
         currentBlock++;
-
-        if (controller->mifareclassicIsTrailerBlock(currentBlock) == HMS_PN532_OK) {                                            // skip the trailer block
+        
+        if (controller->mifareclassicIsTrailerBlock(currentBlock) == HMS_PN532_OK) {
             #if HMS_PN532_DEBUG_ENABLED
-                 pn532Logger.info("Skipping block %d", currentBlock);
+                 pn532Logger.info("Skipping trailer block %d", currentBlock);
             #endif
             currentBlock++;
         }
